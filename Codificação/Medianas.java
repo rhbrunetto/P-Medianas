@@ -3,7 +3,7 @@ import java.io.*;
 
 /**
 Classe principal
-Modela a entrada em um grafo e exibe a solução
+Modela a entrada em um grafo e exibe a soluÃ§Ã£o
 */
 class Main{
   public static Grafo GRAFO;
@@ -19,23 +19,26 @@ class Main{
       String string = scanner.nextLine();
       String[] str = string.split(" ");
       // qtdVertices = Integer.valueOf(str[0]);
-      qtdMedianas = Integer.valueOf(str[1]);
+      numeroMedianas = Integer.valueOf(str[1]);
     }else{
-      System.out.println("ENTRADA INVÁLIDA!");
+      System.out.println("ENTRADA INVALIDA!");
       return;
     }
 
     GRAFO = getInput(scanner);
 
     int tamanhoPopulacao = (int) (GRAFO.vertices.size() * (3/10)); /*30% da quantidade de vertices*/
-    int numeroGeracoes = (int) (GRAFO.vertices.size() / numeroMedianas); /*vertices/medianas = quantidade de iterações*/
-    double taxaDeMutacao;
-    RunTestes rt = new RunTestes(tamanhoPopulacao, numeroGeracoes, numeroMedianas, taxaDeMutacao);
+    int numeroGeracoes = (int) (GRAFO.vertices.size() / numeroMedianas); /*vertices/medianas = quantidade de iteraÃ§Ãµes*/
+    double taxaDeMutacao = 0.03; //TODO: Alterar
+    double taxaDeElitismo = 0.3; //TODO: Alterar
+    int quantidadeReprodutores = 10;
+    RunTestes rt = new RunTestes(tamanhoPopulacao, numeroGeracoes, numeroMedianas, quantidadeReprodutores, taxaDeElitismo, taxaDeMutacao);
+    rt.executar();
   }
 
   public static Grafo getInput(Scanner scanner){
-    QTDVERTICES
-    QTD MEDIANAS
+    //int QTDVERTICES;
+    //int QTDMEDIANAS;
     Grafo grafo = new Grafo();
 
     /*Demais Linhas*/
@@ -43,7 +46,7 @@ class Main{
       String string = scanner.nextLine();
       if(string.isEmpty()) break;
       String[] str = string.split(" ");
-      grafo.vertices.add(new Vertice(Integer.valueOf(str[0]), Integer.valueOf(str[1]), Integer.valueOf(str[2]), Integer.valueOf(str[3])));
+      grafo.addVertice(new Vertice(Integer.valueOf(str[0]), Integer.valueOf(str[1]), Integer.valueOf(str[2]), Integer.valueOf(str[3])));
     }
 
     return grafo;
@@ -53,50 +56,147 @@ class Main{
     a = a + 1;
     return a;
   }
+
+  public static double calcularDistancia(Vertice v1, Vertice v2){
+    return (Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2)));
+  }
+
 }
 
 /**
 Classe que roda um caso de teste
-Recebe os parâmetros e submete aos métodos
+Recebe os parÃ¢metros e submete aos mÃ©todos
 */
 class RunTestes{
   int tamanhoPopulacao;
   int numeroGeracoes;
   int numeroMedianas;
+  int quantidadeReprodutores;
+  double taxaDeElitismo;
   double taxaDeMutacao;
 
-  PriorityQueue<Solucao> populacao;
+  ArrayList<Solucao> populacao;
 
-  public RunTestes(int tamanhoPopulacao, int numeroGeracoes, int numeroMedianas, double taxaDeMutacao){
+  public RunTestes(int tamanhoPopulacao, int numeroGeracoes, int numeroMedianas, int quantidadeReprodutores, double taxaDeElitismo, double taxaDeMutacao){
     this.tamanhoPopulacao = tamanhoPopulacao;
     this.numeroGeracoes = numeroGeracoes;
     this.numeroMedianas = numeroMedianas;
+    this.taxaDeElitismo = taxaDeElitismo;
     this.taxaDeMutacao = taxaDeMutacao;
+    this.quantidadeReprodutores = quantidadeReprodutores;
 
     this.populacao = gerarPopulacaoInicial();
   }
 
-  public static executar(){
-
+  public double executar(){
+     int k=0; double custo=0;
+     while(k < this.numeroGeracoes){
+       ArrayList<Solucao> reprodutores = selecionarReprodutores();
+       ArrayList<Solucao> novaPopulacao = cruzar(reprodutores);
+       novaPopulacao = aplicarMutacao(novaPopulacao); /*Calcula os custos (com e sem mutação)*/
+       atualizarPopulacao(this.populacao, novaPopulacao);
+       k++;
+     }
+     return custo;
   }
 
-  public static PriorityQueue<Solucao> gerarPopulacaoInicial(){
-    PriorityQueue<Solucao> pop;
+  /*Seleção por torneio*/
+  public ArrayList<Solucao> selecionarReprodutores(){
+    int i=0, k=0, randomVal;
+    ArrayList<Solucao> reprodutores = new ArrayList<Solucao>();
+    while(i<this.quantidadeReprodutores){
+      PriorityQueue<Solucao> torneio = new PriorityQueue<Solucao>();
+      while(k<this.quantidadeReprodutores){
+        randomVal = 0; //TODO: implementar randomVal (entre 0 e populacao.size()-1)
+        torneio.add(this.populacao.get(randomVal));
+      }
+      reprodutores.add(torneio.poll());
+      i++;
+    }
+    return reprodutores;
+  }
+
+  /*Cruzamento mesclando medianas*/
+  public ArrayList<Solucao> cruzar(ArrayList<Solucao> reprodutores){
+    ArrayList<Solucao> novosIndividuos = new ArrayList<>();
+    int randomVal = 0;
+    //Cruza o melhor reprodutor com o pior
+    while(reprodutores.size() > 1){
+      Solucao filho = new Solucao();
+      Solucao rep1 = reprodutores.get(0),
+              rep2 = reprodutores.get(reprodutores.size()-1);
+      for(int i=0; i<this.numeroMedianas; i++){
+        Vertice m_rep1 = rep1.medianas.get(i);
+        if(rep2.medianas.contains(m_rep1)) filho.inserirVertice(m_rep1);
+        else{
+          Vertice m_rep2 = rep2.medianas.get(i);
+          //randomVal = ? TODO: Implementar randomVal
+          if(randomVal % 2 == 0) filho.inserirVertice(m_rep1);
+          else filho.inserirVertice(m_rep2);
+        }
+      }
+      reprodutores.remove(rep1);
+      reprodutores.remove(rep2);
+      novosIndividuos.add(filho);
+    }
+    if(!reprodutores.isEmpty()) novosIndividuos.add(reprodutores.get(0));
+    Collections.sort(novosIndividuos);
+    return novosIndividuos;
+  }
+
+  /*Aplica mutação*/
+  public ArrayList<Solucao> aplicarMutacao(ArrayList<Solucao> populacao){
+    int quantidadeMutaveis = (int)(this.taxaDeMutacao * populacao.size()); /*Sorteia quantos serão mutados*/
+    int randomVal;
+    for(int i=0; i<taxaDeMutacao; i++){
+      randomVal = 0; //TODO: Implementar randomVal (0 e populacao.size() -1)
+      Solucao smutavel = populacao.get(randomVal);
+      randomVal = 0; //TODO: Implementar randomVal (0 e medianas.size() - 1)
+      int quantidadeMedianasAlteradas = randomVal;
+      for(int k=0; k<quantidadeMedianasAlteradas; k++){
+        randomVal = 0; //TODO: Implementar randomVal (0 e medianas.size() - 1)
+        smutavel.medianas.remove(randomVal); //Remove a mediana na posicao randomVal
+        randomVal = 0; //TODO: Implementar randomVal (0 e grafo.vertices.size() - 1)
+        while(smutavel.medianas.contains(smutavel.grafo.vertices.get(randomVal))) randomVal = 0; //TODO: Implementar randomVal (0 e grafo.vertices.size() - 1)
+        smutavel.inserirVertice(smutavel.grafo.vertices.get(randomVal)); //Adiciona o vértice como mediana
+      }
+    }
+    for(Solucao s : populacao) s.calcularCusto();
+    Collections.sort(populacao);
+    return populacao;
+  }
+
+  /*Atualização da populacao*/
+  public ArrayList<Solucao> atualizarPopulacao(ArrayList<Solucao> antiga, ArrayList<Solucao> nova){
+    ArrayList<Solucao> pop = new ArrayList();
+    Collections.sort(antiga); //Nova está ordenada
+    int quantidadePreservados = (int)(antiga.size() * this.taxaDeElitismo);
+    for(int i = 0; i<quantidadePreservados; i++){
+      pop.add(antiga.get(i));
+    }
+    pop.addAll(nova);
+    Collections.sort(pop);
+    return pop;
+  }
+
+  public ArrayList<Solucao> gerarPopulacaoInicial(){
+    ArrayList<Solucao> pop = new ArrayList<>();
     int k=0;
     while(k < this.tamanhoPopulacao){
       pop.add(gerarSolucaoRandomica());
       k++;
     }
+    Collections.sort(pop);
     return pop;
   }
 
-  //TODO: MEDIANA TAMBÉM DEVE SUPRIR SUA PRÓPRIA NECESSIDADE
-  public static Solucao gerarSolucaoRandomica(){
+  //TODO: MEDIANA TAMBÃ‰M DEVE SUPRIR SUA PRÃ“PRIA NECESSIDADE
+  public Solucao gerarSolucaoRandomica(){
     Solucao s = new Solucao();
     int i = 0;
     while(i < this.numeroMedianas){
-      int randomVal; //TODO: Gerar entre 0 e s.grafo.vertices.size()
-      if(s.medianas.exists(s.grafo.vertices.get(randomVal))) continue;
+      int randomVal = 0; //TODO: Gerar entre 0 e s.grafo.vertices.size()-1
+      if(s.medianas.contains(s.grafo.vertices.get(randomVal))) continue;
       s.inserirVertice(s.grafo.vertices.get(randomVal));
       i++;
     }
@@ -104,12 +204,7 @@ class RunTestes{
     return s;
   }
 
-  public static double calcularDistancia(Vertice v1, Vertice v2){
-    return (Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2)));
-  }
-
-
-  class Solucao{
+  class Solucao implements Comparable<Solucao>{
     Grafo grafo;
     ArrayList<Vertice> medianas;
     PriorityQueue<Vertice> prioridades;
@@ -117,19 +212,24 @@ class RunTestes{
 
     public Solucao(){
       this.grafo = Main.GRAFO.copiar();
+      this.custo = -1;
     }
 
     public void inserirVertice(Vertice v){
-      medianas.add(v);
-      v.capacidade -= v.demanda;
+      medianas.add(this.grafo.vertices.get(v.id)); /*Insere o v�rtice correspondente �quele id, mas desta solu��o*/
     }
 
     public void calcularCusto(){
       double menorDist = -1, secMenorDist = -1;
-      for(Vertice v : grafo.vertices){
+
+      for(Vertice v : this.medianas){
+        v.capacidade -= v.demanda;
+      }
+
+      for(Vertice v : grafo.vertices.values()){
         for(Vertice med : medianas){
           if(v.equals(med)) continue;
-          double dist = calcularDistancia(v, med);
+          double dist = Main.calcularDistancia(v, med);
           if(dist < menorDist){
             secMenorDist = menorDist;
             menorDist = dist;
@@ -155,7 +255,7 @@ class RunTestes{
           double n_menorDist = -1;
           for(Vertice med : medianas){
             if(med.isCheia()) continue;
-            double dist = calcularDistancia(v_priori, med);
+            double dist = Main.calcularDistancia(v_priori, med);
             if(dist < n_menorDist){
               v_mediana = med;
               n_menorDist = dist;
@@ -164,6 +264,14 @@ class RunTestes{
           v_priori.associarMediana(v_mediana, n_menorDist);
         }
       }
+    }
+
+    @Override
+    public int compareTo(Solucao o) {
+      double dif =  this.custo - o.custo;
+      if(dif < 0) return -1;
+      if(dif > 0) return 1;
+      return 0;
     }
   }
 }
@@ -235,10 +343,14 @@ class Vertice implements Comparable<Vertice>{
 }
 
 class Grafo{
-  ArrayList<Vertice> vertices;
+  HashMap<Integer, Vertice> vertices;
 
   public Grafo(){
-    vertices = new ArrayList();
+    vertices = new HashMap();
+  }
+
+  public void addVertice(Vertice v){
+     vertices.put(v.id, v);
   }
 
   //TODO: Implementar

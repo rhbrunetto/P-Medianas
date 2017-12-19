@@ -17,7 +17,7 @@
 
 	\maketitle
 
-	{\resumo{}}
+	%{\resumo{}}
 
   \section*{Questão 01}
 	Os algoritmos heurísticos podem ser divididos em \textit{Algoritmos Construtivos} e \textit{Algoritmos Melhorativos},
@@ -30,7 +30,60 @@
 		cada iteração até que atinja determinado critério de parada e obtenha a solução.
 
 		\item \textbf{Algoritmo Melhorativo}: Sua função é, dada uma solução inicial,
-		obter uma solução de melhor valor de função objetivo. Um algotimo melhorativo
+		obter uma solução de melhor valor de função objetivo. Pode-se, inclusive, fazer uso
+		de outra heurística para cálculo do valor de solução. Um algotimo melhorativo
+		faz uso de uma \textbf{Busca Local} para percorrer soluções na vizinhança
+		e, através de determinado critério de parada, obter uma solução melhor.
+	\end{itemize}
+
+	\section*{Questão 02}
+	A Solução Ótima (Global) de um problema está vinculada ao melhor valor da função-objetivo
+	para todas as possíveis combinações das variáveis no âmbito que se considera. Por outro lado,
+	a Solução Local (Ótimo Local) é referente ao melhor valor da função-objetivo em determinada
+	vizinhança (localidade) que se considera. Dessa forma, enquanto um valor é referente à melhor
+	solução que se pode obter em todos os cenários, outro valor é referente à melhor solução que
+	se pode obter em determinada região de análise.\\
+	Obter um ótimo local ou ótimo global é dependente da heurística que se adota. Métodos exatos
+	e algumas heurísticas são capazes de obter o ótimo global para determinados problemas. Contudo,
+	principalmente quando se envolve otimização combinatória, obter a solução ótima torna-se computacionalmente
+	trabalhoso na maior parte dos casos. Assim, o ótimo local se sai como a melhor solução encontrada na
+	vizinhança, enquanto o ótimo global é a melhor dentre todos os ótimos locais.\\
+	Dessa forma, a qualidade de uma solução relaciona-se diretamente com a vizinhança onde se
+	deseja buscar e a heurística que se adota. Assim, muitas vezes é possível obter uma solução local
+	para determinado problema que seja satisfatória para os parâmetros dados e tempo computacional
+	esperado.
+
+	\section*{Questão 03}
+	Uma solução $x$ é dita \textbf{vizinha} de uma solução $y$ quando é possível transformar $x$ em
+	$y$ através da aplicação de uma determinada operação, chamada de \textbf{movimento}, que executa
+	uma perturbação elementar em $x$. Em outras palavras, uma solução é vizinha de outra quando é possível alterar seus elementos seguindo
+	determinada operação. A busca local consiste em "caminhar" entre as soluções vizinhas de determinada solução para
+	procurar um ótimo local e, então, gerar as soluções vizinhas deste. É extremamente útil fazer uso
+	da técnica de encontrar soluções vizinhas para se restringir o espaço de busca através de determinada
+	heurística.\\
+	Dessa forma, a vizinhança de uma solução é constituída por todas as soluções que se pode encontrar
+	aplicando \textbf{um movimento}. Isso faz com que se obtenha soluções derivadas uma única vez. Em
+	algoritmos heurísticos, conforme citado, faz-se uso da vizinhança para aplicar a heurística a determinado
+	espaço de busca. Assim, adota-se uma estratégia de busca na vizinhança (Busca Local) e aplica-se
+	a heurística para encontrar o valor da função-objetivo. Logo, aliado à estratégia de busca, tem-se o
+	ótimo local para o problema através da aplicação da heurística.
+
+	\section*{Questão 04}
+	Existem diversas formas de explorar a vizinhança de uma solução. Tais formas são chamadas de estratégias de busca, e servem para "caminhar" entre as soluções através de um critério de modificação da solução para gerar a vizinhança. Existem duas formas clássicas, dentre as variações:
+	\begin{itemize}
+		\item \textbf{First Improvement}, ou Melhoria Iterativa, onde é selecionada uma solução qualquer
+		da vizinhança que apresente melhoria. Em geral, seleciona-se a primeira solução gerada que resulte
+		em melhora no valor da função-objetivo. Há economia de processamento e tempo computacional, visto que não se torna necessário gerar todas as soluções da vizinhança ou realizar uma análise mais detalhada das mesmas. Contudo, pode ser que a primeira solução com melhoria gerada não seja tão expressiva quanto outra futura que não fora considerada.
+		\item \textbf{Best Improvement}, ou Descida mais Rápida, tende a selecionar a melhor solução da vizinhança, ou seja, aquela que apresenta uma melhoria mais expressiva. Para tanto, é necessário calcular todas as soluções envolvidas na vizinhança e analisar as melhorias proporcionadas por cada uma, o que toma mais tempo computacional e processamento. Contudo, o nome "Descida mais Rápida" refere-se ao fato de que tal estratégia seleciona sempre as melhores opções das vizinhanças que percorre (ótimos locais), o que proporciona uma conversão mais acelerada a determinado valor de solução final.
+	\end{itemize}
+
+	\section*{Questão 05}
+	Em termos gerais, \textbf{Meta-Heurística} pode ser definida como uma estratégia geral para projetar procedimentos heurísticos com alta performance. De forma geral, uma meta-heurística se propõe a basear um modelo para construção de uma heurística, que visa a transpor falhas da busca local, por exemplo. Assim, uma meta-heurística é, a grosso modo, uma heurística para criar heurísticas. Em geral, baseia-se em modelos da natureza, como fenômenos físicos, quimicos e biológicos.\\
+	Dentre as diversas meta-heurísticas existentes, as mais clássicas são:
+	\begin{itemize}
+		\item \textbf{Algoritmos Genéticos}: consiste de um algoritmo probabilistico com base análoga no processo de evolução natural, através da seleção de soluções de um problema de otimização combinatória. Em suma, mantém-se uma população onde cada indivíduo é um cromossomo (solução) e, então, selecionam-se cromossomos reprodutores para gerar uma nova população através de um cruzamento e posterior possível mutação, inserindo novos elementos e removendo outros.
+		\item \textbf{Simulated Annealing}: consiste de um processo onde se faz analogia com o processo industrial de \textit{annealing}. Assim, parte-se de uma alta temperatura (solução longe do ótimo local) e resfriar o sistema (refinar a solução). Para isso, admite-se uma probabilidade de construir soluções ruins em altas temperaturas e, conforme o sistema vai se resfriando, tal probabailidade diminui, visto que se aproxima do ótimo local.
+		\item \textbf{Ant System}: consiste de um paradigma computacional que propõe soluções com base em uma analogia com o comportamento de colônias de formigas naturais. Nesse ínterim, simulam-se formigas (chamadas de formigas artificiais) para servirem de ferramenta de otimização. Assim, tem-se uma população de formigas artificiais, onde cada qual formulará uma solução (o caminho percorrido). Dentre diversos fatores, um dos agentes mais importantes nesse contexto é o feromônio, tratado como uma forma de auto-reforçar o comportamento das formigas e conduzir os valores de probabilidade para percorrer determinado caminho. Como consequência, estima-se uma convergência mais rápida para solução (não é regra).
 	\end{itemize}
 
 	\bibliographystyle{sbc}
