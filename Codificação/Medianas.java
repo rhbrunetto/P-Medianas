@@ -183,7 +183,9 @@ class RunTestes{
     ArrayList<Solucao> pop = new ArrayList<>();
     int k=0;
     while(k < this.tamanhoPopulacao){
-      pop.add(gerarSolucaoRandomica());
+      Solucao s = gerarSolucaoRandomica();
+      while(s.custo == -1) s = gerarSolucaoRandomica();
+      pop.add(s);
       k++;
     }
     Collections.sort(pop);
@@ -219,7 +221,7 @@ class RunTestes{
       medianas.add(this.grafo.vertices.get(v.id)); /*Insere o v�rtice correspondente �quele id, mas desta solu��o*/
     }
 
-    public void calcularCusto(){
+    public double calcularCusto(){
       double menorDist = -1, secMenorDist = -1;
 
       for(Vertice v : this.medianas){
@@ -246,24 +248,29 @@ class RunTestes{
       }
       while(!prioridades.isEmpty()){
         Vertice v_priori = prioridades.poll();
-        if(!v_priori.medianaCandidata1.isCheia())
+        if(!v_priori.medianaCandidata1.isCheia(v_priori))
         v_priori.associarMediana(v_priori.medianaCandidata1, v_priori.distanciaMed1);
-        else if(!v_priori.medianaCandidata2.isCheia())
+        else if(!v_priori.medianaCandidata2.isCheia(v_priori))
         v_priori.associarMediana(v_priori.medianaCandidata2, v_priori.distanciaMed2);
         else{
           Vertice v_mediana = null;
           double n_menorDist = -1;
           for(Vertice med : medianas){
-            if(med.isCheia()) continue;
+            if(med.isCheia(v_priori)) continue;
             double dist = Main.calcularDistancia(v_priori, med);
             if(dist < n_menorDist){
               v_mediana = med;
               n_menorDist = dist;
             }
           }
+          if(v_mediana == null) return -1;
           v_priori.associarMediana(v_mediana, n_menorDist);
         }
       }
+      this.custo = 0;
+      for(Vertice v : grafo.vertices.values())
+        this.custo += v.distancia;
+      return this.custo;
     }
 
     @Override
@@ -290,14 +297,22 @@ class Vertice implements Comparable<Vertice>{
     this.capacidade = capacidade;
   }
 
+  public Vertice(int id, int x, int y, int demanda, int capacidade){
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.demanda = demanda;
+    this.capacidade = capacidade;
+  }
+
   public void associarMediana(Vertice med, double dist){
     med.capacidade = med.capacidade - 1;
     this.medianaAssociada = med;
     this.distancia = dist;
   }
 
-  public boolean isCheia(){
-    return (this.capacidade == 0);
+  public boolean isCheia(Vertice v){
+    return (this.capacidade < v.demanda);
   }
 
   public void setDifDistancia(double dif){
@@ -353,8 +368,11 @@ class Grafo{
      vertices.put(v.id, v);
   }
 
-  //TODO: Implementar
   public Grafo copiar(){
-    return null;
+    Grafo g = new Grafo();
+    for(Vertice v : this.vertices.values()){
+      g.addVertice(new Vertice(v.id, v.x, v.y, v.demanda, v.capacidade));
+    }
+    return g;
   }
 }
