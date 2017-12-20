@@ -2,7 +2,7 @@ SHELL=cmd.exe
 FILE=Medianas
 CLASS=Main
 
-all: execute
+all: posexecute
 	@echo "Sucesso!"
 
 compile:
@@ -11,5 +11,8 @@ compile:
 makejar: compile
 	@jar cf $(FILE).jar $(CLASS).class
 
-execute: compile
-	@java Main < Testes/SJC3a.dat
+execute: makejar
+	@java Main < ../Testes/SJC3a.dat
+
+posexecute: execute
+	@del *.class
