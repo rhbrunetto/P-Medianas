@@ -1,7 +1,7 @@
 SHELL=cmd.exe
 FILE=Medianas
 CLASS=Main
-INPUT=SJC4b
+INPUT=SJC1
 
 all: posexecute
 	@echo "Sucesso!"
