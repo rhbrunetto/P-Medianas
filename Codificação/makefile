@@ -12,4 +12,4 @@ makejar: compile
 	@jar cf $(FILE).jar $(CLASS).class
 
 execute: compile
-	@del *.class
+	@java Main < Testes/SJC3a.dat

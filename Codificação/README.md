@@ -7,7 +7,7 @@ Trabalho de Modelagem e Otimização Algorítmica
 # TODO
 - [x] Estrutura De Grafo
 - [x] Calculo de Custo de Solução
-- [ ] I/O
+- [x] I/O
 - [x] Calcular População Inicial (Random)
 - [x] Implementar Estrutura Principal
   - [x] Implementar Seleção
