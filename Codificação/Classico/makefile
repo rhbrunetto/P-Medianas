@@ -16,4 +16,4 @@ execute: makejar
 	@java Main < ../Testes/$(INPUT).dat > Logs/log_$(INPUT)
 
 posexecute: execute
-	@rm *.class
+	@del *.class
