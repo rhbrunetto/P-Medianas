@@ -13,7 +13,6 @@ makejar: compile
 	@jar cf $(FILE).jar *.class
 
 execute: makejar
-	@java Main < ../Testes/$(INPUT).dat > Logs/log_$(INPUT)
 
 posexecute: execute
 	@del *.class

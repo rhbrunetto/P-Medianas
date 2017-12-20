@@ -27,11 +27,11 @@ class Main{
 
     GRAFO = getInput(scanner);
 
-    int tamanhoPopulacao = (int) (GRAFO.vertices.values().size() * (3.0/10)); /*30% da quantidade de vertices*/
-    int numeroGeracoes = GRAFO.vertices.values().size() * (numeroMedianas * 3/10); /*vertices/medianas = quantidade de iteraÃ§Ãµes*/
+    int tamanhoPopulacao = 15; /*30% da quantidade de vertices*/
+    int numeroGeracoes = 5; /*vertices/medianas = quantidade de iteraÃ§Ãµes*/
     double taxaDeMutacao = 0.03; //TODO: Alterar
     double taxaDeElitismo = 0.1; //TODO: Alterar
-    int quantidadeReprodutores = 10;
+    int quantidadeReprodutores = 2;
     RunTestes rt = new RunTestes(tamanhoPopulacao, numeroGeracoes, numeroMedianas, quantidadeReprodutores, taxaDeElitismo, taxaDeMutacao);
     System.out.println(rt.executar());
   }
@@ -191,7 +191,7 @@ class RunTestes{
 
   /*Atualização da populacao*/
   public ArrayList<Solucao> atualizarPopulacao(ArrayList<Solucao> antiga, ArrayList<Solucao> nova){
-    ArrayList<Solucao> pop = new ArrayList();
+    ArrayList<Solucao> pop = new ArrayList<>();
     Collections.sort(antiga); //Nova está ordenada
     pop.addAll(antiga);
     pop.addAll(nova);
@@ -202,7 +202,7 @@ class RunTestes{
 
   /*Aplica Busca Local e retorna a vizinhança da solução*/
   public ArrayList<Solucao> buscaLocal(Solucao individuo){
-    ArrayList<Solucao> vizinhanca = new ArrayList();
+    ArrayList<Solucao> vizinhanca = new ArrayList<>();
     //Gera os vizinhos (clona o individuo)
     for(int i=0; i<this.numeroMedianas; i++){
       Solucao vizinho = new Solucao();
@@ -275,7 +275,7 @@ class RunTestes{
         this.medianas.capacidades[k] -= Main.GRAFO.vertices.get(this.medianas.indices[k]).demanda;
       }
 
-      PriorityQueue<VerticeSolucao> prioridades = new PriorityQueue();
+      PriorityQueue<VerticeSolucao> prioridades = new PriorityQueue<>();
 
       for(int i=0; i<RunTestes.numeroVertices; i++){
         vertices[i] = new VerticeSolucao();
