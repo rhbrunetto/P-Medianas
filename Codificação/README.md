@@ -14,8 +14,7 @@ Trabalho de Modelagem e Otimização Algorítmica
   - [x] Implementar Cruzamento
   - [x] Implementar Mutação
   - [x] Implementar Atualização de População
-- [x] Testes/Correções
-- [ ] Busca Local
-- [ ] Relatório
-  - [ ] Casos de Teste
-  - [ ] Análise de Performance
+- [x] Testes
+- [x] Busca Local
+- [ ] Correções
+- [x] Relatório
