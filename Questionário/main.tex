@@ -3,7 +3,7 @@
 
 \sloppy
 
-\title{Questionário - Prova 03\\Modelagem e Otimização Algorítmica}
+\title{3ª Avaliação de 2017 – Parte 2\\Modelagem e Otimização Algorítmica}
 
 \author{Ricardo Henrique Brunetto (RA94182)\inst{1}}
 
@@ -86,7 +86,44 @@
 		\item \textbf{Ant System}: consiste de um paradigma computacional que propõe soluções com base em uma analogia com o comportamento de colônias de formigas naturais. Nesse ínterim, simulam-se formigas (chamadas de formigas artificiais) para servirem de ferramenta de otimização. Assim, tem-se uma população de formigas artificiais, onde cada qual formulará uma solução (o caminho percorrido). Dentre diversos fatores, um dos agentes mais importantes nesse contexto é o feromônio, tratado como uma forma de auto-reforçar o comportamento das formigas e conduzir os valores de probabilidade para percorrer determinado caminho. Como consequência, estima-se uma convergência mais rápida para solução (não é regra).
 	\end{itemize}
 
+	\section*{Questão 06}
+	Não. Em geral, a aplicação clássica de um Algoritmo Genético comporta apenas as \textbf{operações} que o caracterizam. As operações são o que definem o Algoritmo Genético básico, sendo elas, em geral:
+	\begin{itemize}
+		\item \textbf{Seleção}: selecionar os reprodutores (indivíduos a serem cruzados);
+		\item \textbf{Reprodução}: consiste em executar uma combinação dos pais para gerar filhos;
+		\item \textbf{Mutação}: uma taxa (pequena) da população é submetida a uma ligeira modificação arbitrária.
+	\end{itemize}
+	Em geral, tem-se uma avaliação de aptidão dos cromossomos filhos para ter base da qualidade da solução gerada e, em seguida, faz-se a seleção dos reprodutores, cruzando-os e aplicando a mutação aos novos indivíduos, quando válido. Por fim, atualiza-se a população.\\
+	Contudo, a busca local, que se encaixa após a geração de um novo indivíduo, pode colaborar para a convergência do algoritmo uma vez que se considera sempre o ótimo local em relação à vizinhança de um indivíduo gerado, em vez dele próprio.
+
+	\section*{Questão 07}
+	Em algoritmos heurísticos, o termo \textbf{estagnação} representa uma melhoria inexpressiva (ou inexistente) entre sucessivas soluções. Em geral, a estagnação pode significar que se encontrou um ótimo (local ou global) ou que houve uma convergência precoce - e errônea - do algoritmo, o que é mais comum.\\
+	Em termos analíticos, uma meta-heurística com maiores chances de estagnar é o \textbf{Ant System} (Sistema Fórmico). Isso porque o algoritmo faz uso de uma estratégia de reforço (feromônio) para determinadas soluções baseando-se em probabilidade, o que pode, após determinadas iterações, induzir fortemente determinados caminhos, em detrimento excessivo a outros. Dessa forma, não há diversidade de soluções e acaba-se por não explorar outras possibilidades de solução, o que faz o algoritmo se voltar apenas para determinada vertente, estagnando.\\
+	Em algoritmos genéticos, a estagnação pode ser evitada através da manutenção de uma diversidade maior dentro da população, ou seja, quanto mais diferentes os indivíduos forem entre si, mais diversificados serão os indivíduos gerados e, dessa forma, tende-se a manter uma população com diferentes níveis. Nesse íterim, há ênfase para o \textit{crossover} (reprodução) entre os cromossomos e para a mutação. Além disso, apenas gerar indivíduos novos - e diversificados - não é o suficiente, devendo-se adotar uma estratégia coerente para atualização da população. Nesse caso, é interessante manter parte da população antiga ao adotar a nova, uma vez que preseva-se os genes mais perpetuantes bem como os mutados.
+
+	\section*{Questão 08}
+	Em relação às meta-heurísticas que trabalham com um conjunto de soluções, tem-se como exemplo:
+	\begin{itemize}
+		\item \textbf{Algoritmos Genéticos}: mantém uma população de soluções que são combinadas e geram novas soluções, seguindo os operadores característicos de um algoritmo genético.
+		\item \textbf{Ant System}: mantém uma população de soluções, uma em cada formiga, gerando novas soluções conforme as iterações do algoritmo e a distribuição de feromônio.
+	\end{itemize}
+	Por outro lado, em relação às meta-heurísticas que operam em uma única solução, tem-se:
+	\begin{itemize}
+		\item \textbf{Simulated Annealing}: manipula uma solução de maneira análoga ao processo de resfriamento de cristais, iniciando com altas temperaturas (solução longe do ideal) e diminuições bruscas até atingir uma temperatua mais baixa (solução próxima do ideal) e operar diminuições paulatinas.
+		\item \textbf{GRASP}: (\textit{Greedy Randomized Adaptative Search Procedure}) opera em uma única solução, melhorando-a através de uma busca local.
+	\end{itemize}
+
+	\section*{Questão 09}
+	É recomendada a meta-heurística \textbf{Variable Neighborhood Search}. Isso porque ela possibilita de explorar sistematicamente múltiplas vizinhanças de uma mesma solução de modo dinâmico. Nesse contexto, tal meta-heurística explora a melhor solução de cada uma das vizinhanças que se trabalha.\\
+	O processo se dá através da tentativa de aprimorar a solução através das sucessivas vizinhanças que se tem disponível. Dessa forma, tem-se mais de uma forma de explorar as soluções derivadas e maior chance de encontrar a solução ótima.
+
+	\section*{Questão 10}
+	Em relação a um processo adaptativo, tem-se a \textbf{Busca-Tabu}.\\
+	Seu processo de aprendizado se dá através da inibição de movimentos que não levam a nova soluções. Assim, quando se calcula determinada solução, é utilizada uma \textbf{estrutura de memória} para armazená-la. O mais comum é utilizar uma \textbf{Lista Tabu}, que compõe uma lista das soluções consideradas proibidas por determinado número de iterações (\textbf{Prazo Tabu}), visto que futuramente podem ser úteis. De posse dessa estrutura, calcula-se, a cada iteração, uma solução vizinha que seja melhor que a corrente, descartando soluções que já estão contidas na lista.\\
+	Dessa forma, evita-se cometer "erros" ao utilizar um mecanismo de memória e adaptatividade para armazenar soluções já visitadas.
+
 	\bibliographystyle{sbc}
 	\bibliography{references}
+	\nocite{*}
 
 \end{document}

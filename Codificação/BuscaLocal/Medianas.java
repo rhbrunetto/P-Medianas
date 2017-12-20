@@ -29,12 +29,11 @@ class Main{
 
     int tamanhoPopulacao = (int) (GRAFO.vertices.values().size() * (3.0/10)); /*30% da quantidade de vertices*/
     int numeroGeracoes = GRAFO.vertices.values().size() * (numeroMedianas * 3/10); /*vertices/medianas = quantidade de iteraÃ§Ãµes*/
-    //System.out.println(tamanhoPopulacao + " " + numeroGeracoes + " " + GRAFO.vertices.values().size());
     double taxaDeMutacao = 0.03; //TODO: Alterar
     double taxaDeElitismo = 0.1; //TODO: Alterar
     int quantidadeReprodutores = 10;
     RunTestes rt = new RunTestes(tamanhoPopulacao, numeroGeracoes, numeroMedianas, quantidadeReprodutores, taxaDeElitismo, taxaDeMutacao);
-    rt.executar();
+    System.out.println(rt.executar());
   }
 
   public static Grafo getInput(Scanner scanner){
@@ -44,9 +43,10 @@ class Main{
       String string = scanner.nextLine();
       if(string.isEmpty()) break;
       String[] str = string.split("\\s+");
-
-      grafo.addVertice(Integer.valueOf(str[1]), Integer.valueOf(str[2]), Integer.valueOf(str[3]), Integer.valueOf(str[4]));
-      //System.out.println(Integer.valueOf(str[1]) + " | " + Integer.valueOf(str[2]) + " | " + Integer.valueOf(str[3]) + " | " + Integer.valueOf(str[4]));
+      if(str.length < 5)
+        grafo.addVertice(Integer.valueOf(str[0]), Integer.valueOf(str[1]), Integer.valueOf(str[2]), Integer.valueOf(str[3]));
+      else
+        grafo.addVertice(Integer.valueOf(str[1]), Integer.valueOf(str[2]), Integer.valueOf(str[3]), Integer.valueOf(str[4]));
     }
 
     return grafo;
@@ -83,7 +83,6 @@ class RunTestes{
     this.quantidadeReprodutores = quantidadeReprodutores;
     this.numeroVertices = Main.GRAFO.vertices.values().size();
     this.populacao = gerarPopulacaoInicial();
-    //System.out.println(populacao.size());
   }
 
   public double executar(){
@@ -94,14 +93,8 @@ class RunTestes{
       novaPopulacao = aplicarMutacao(novaPopulacao); /*Calcula os custos (com e sem mutação)*/
       this.populacao = atualizarPopulacao(this.populacao, novaPopulacao);
       k++;
-
-      System.out.println("[EXECUTAR]");
-      // for(Solucao s : populacao){
-      //   System.out.println("\tCusto: " + s.custo);
-      // }
-      System.out.println("\tMelhor Custo: " + populacao.get(0).custo);
     }
-    return custo;
+    return this.populacao.get(0).custo;
   }
 
   /*Seleção por torneio*/
@@ -122,10 +115,6 @@ class RunTestes{
       reprodutores.add(torneio.poll());
       i++;
     }
-    //System.out.println("[REPRODUTORES]");
-    // for(Solucao s : reprodutores){
-    //   System.out.println("\tCusto: " + s.custo);
-    // }
     return reprodutores;
   }
 
@@ -165,10 +154,7 @@ class RunTestes{
 
       reprodutores.remove(rep1);
       reprodutores.remove(rep2);
-      // for(int j=0; j<filho.medianas.indices.length; j++){
-      //   System.out.println("[Filho]: " + j + " -> " + filho.medianas.indices[j]);
-      // }
-      novosIndividuos.add(filho);
+      novosIndividuos.add(buscaLocal(filho).get(0));
     }
     if(!reprodutores.isEmpty()) novosIndividuos.add(reprodutores.get(0));
     Collections.sort(novosIndividuos);
@@ -212,6 +198,32 @@ class RunTestes{
     Collections.sort(pop);
     pop.subList(tamanhoPopulacao - 1, pop.size()).clear();
     return pop;
+  }
+
+  /*Aplica Busca Local e retorna a vizinhança da solução*/
+  public ArrayList<Solucao> buscaLocal(Solucao individuo){
+    ArrayList<Solucao> vizinhanca = new ArrayList();
+    //Gera os vizinhos (clona o individuo)
+    for(int i=0; i<this.numeroMedianas; i++){
+      Solucao vizinho = new Solucao();
+      for(int k=0; k<this.numeroMedianas; k++){
+        vizinho.medianas.add(individuo.medianas.indices[k]);
+      }
+      vizinhanca.add(vizinho);
+    }
+    //Altera os vizinhos
+    for(int i=0; i<vizinhanca.size(); i++){
+      Solucao vizinho = vizinhanca.get(i);
+      int mediana = vizinho.medianas.indices[i];
+      do{
+        mediana = ((mediana + 1)%this.numeroVertices);
+      }while(vizinho.medianas.contains(mediana));
+      vizinho.medianas.insertAt(i, mediana);
+      vizinho.calcularCusto();
+    }
+    vizinhanca.add(individuo);
+    Collections.sort(vizinhanca);
+    return vizinhanca;
   }
 
   public ArrayList<Solucao> gerarPopulacaoInicial(){
@@ -298,14 +310,11 @@ class RunTestes{
       for(int i=0; i<vertices.length; i++){
         rej = 0;
         vs = vertices[i];
-        if(vs.difDistancia < 0) //System.out.println("Pulando " + vs.id + " (MEDIANA)");
+        if(vs.difDistancia < 0)
           continue;
-        //System.out.println(vs.id);
         if(this.medianas.capacidades[vs.indexCandidata] >= Main.GRAFO.vertices.get(vs.id).demanda){ //Cabe
           vs.indexMediana = vs.indexCandidata;
-          //System.out.println("\t-> cabe [DE PRIMEIRA] na mediana " + this.medianas.indices[vs.indexMediana] + " : [D]" + Main.GRAFO.vertices.get(vs.id).demanda + " [C]" + this.medianas.capacidades[vs.indexMediana]);
         }else{
-          //System.out.println("\t-> NAO cabe [DE PRIMEIRA] na mediana " + this.medianas.indices[vs.indexCandidata] + " : [D]" + Main.GRAFO.vertices.get(vs.id).demanda + " [C]" + this.medianas.capacidades[vs.indexCandidata]);
           double menorDist = Double.POSITIVE_INFINITY, local = 0;
           for(int k=0; k<this.medianas.indices.length; k++){
             if(this.medianas.capacidades[k] >= Main.GRAFO.vertices.get(vs.id).demanda){ //Cabe
@@ -314,10 +323,8 @@ class RunTestes{
                 menorDist = local;
                 vs.indexMediana = k;
                 vs.distancia = local;
-                //System.out.println("\t-> cabe na mediana " + this.medianas.indices[k] + " : [D]" + Main.GRAFO.vertices.get(vs.id).demanda + " [C]" + this.medianas.capacidades[k]);
               }
             }else{
-              //System.out.println("\t-> nao cabe na mediana " + this.medianas.indices[k] + " : [D]" + Main.GRAFO.vertices.get(vs.id).demanda + " [C]" + this.medianas.capacidades[k]);
               rej++;
             }
           }
@@ -327,7 +334,6 @@ class RunTestes{
         else{
           vs.indexMediana = -1;
           vs.distancia = -1;
-          System.out.println("Nulo");
         }
       }
 
@@ -338,9 +344,6 @@ class RunTestes{
         }
         this.custo += v.distancia == -1 ? 0 : v.distancia;
       }
-
-      //System.out.println("SOLUCAO FINALIZADA COM SUCESSO!");
-      //System.out.println("Custo: " + this.custo);
       return 0;
     }
 
@@ -423,7 +426,6 @@ class Grafo{
     int id, x,y, demanda, capacidade;
 
     public Vertice(int x, int y, int capacidade, int demanda){
-      //System.out.println("x: " + x + " y: " + y +" capacidade: " + capacidade +" demanda: " + demanda);
       this.id = Main.getId();
       this.x = x;
       this.y = y;

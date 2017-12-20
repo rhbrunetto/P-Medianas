@@ -34,7 +34,7 @@ class Main{
     double taxaDeElitismo = 0.1; //TODO: Alterar
     int quantidadeReprodutores = 10;
     RunTestes rt = new RunTestes(tamanhoPopulacao, numeroGeracoes, numeroMedianas, quantidadeReprodutores, taxaDeElitismo, taxaDeMutacao);
-    rt.executar();
+    System.out.println(rt.executar());
   }
 
   public static Grafo getInput(Scanner scanner){
@@ -90,13 +90,11 @@ class RunTestes{
 
   public double executar(){
     int k=0; double custo=0;
-    System.out.println("iteracao;melhor_custo;");
     while(k < this.numeroGeracoes){
       ArrayList<Solucao> reprodutores = selecionarReprodutores();
       ArrayList<Solucao> novaPopulacao = cruzar(reprodutores);
       novaPopulacao = aplicarMutacao(novaPopulacao); /*Calcula os custos (com e sem mutação)*/
       this.populacao = atualizarPopulacao(this.populacao, novaPopulacao);
-      System.out.println(k + ";" + String.format("%.5f", populacao.get(0).custo) + ";");
       k++;
     }
     return custo;
